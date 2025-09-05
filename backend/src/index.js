@@ -24,14 +24,15 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 
 
-
-app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.NODE_ENV === "production" 
+      ? process.env.FRONTEND_URL || true  // Render URL allow karega
+      : "http://localhost:5173",
     credentials: true,
   })
 );
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);

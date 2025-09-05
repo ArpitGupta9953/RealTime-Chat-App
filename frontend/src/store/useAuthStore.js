@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { axiosInstance } from "../lib/axios.js";
+import api from "../lib/axios.js"; // ← CHANGED: Default import
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
@@ -16,8 +16,7 @@ export const useAuthStore = create((set, get) => ({
 
   checkAuth: async () => {
     try {
-      const res = await axiosInstance.get("/auth/check");
-
+      const res = await api.get("/auth/check"); // ← CHANGED: api instead of axiosInstance
       set({ authUser: res.data });
       get().connectSocket();
     } catch (error) {
@@ -31,7 +30,7 @@ export const useAuthStore = create((set, get) => ({
   signup: async (data) => {
     set({ isSigningUp: true });
     try {
-      const res = await axiosInstance.post("/auth/signup", data);
+      const res = await api.post("/auth/signup", data); // ← CHANGED
       set({ authUser: res.data });
       toast.success("Account created successfully");
       get().connectSocket();
@@ -45,10 +44,9 @@ export const useAuthStore = create((set, get) => ({
   login: async (data) => {
     set({ isLoggingIn: true });
     try {
-      const res = await axiosInstance.post("/auth/login", data);
+      const res = await api.post("/auth/login", data); // ← CHANGED
       set({ authUser: res.data });
       toast.success("Logged in successfully");
-
       get().connectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
@@ -59,7 +57,7 @@ export const useAuthStore = create((set, get) => ({
 
   logout: async () => {
     try {
-      await axiosInstance.post("/auth/logout");
+      await api.post("/auth/logout"); // ← CHANGED
       set({ authUser: null });
       toast.success("Logged out successfully");
       get().disconnectSocket();
@@ -71,7 +69,7 @@ export const useAuthStore = create((set, get) => ({
   updateProfile: async (data) => {
     set({ isUpdatingProfile: true });
     try {
-      const res = await axiosInstance.put("/auth/update-profile", data);
+      const res = await api.put("/auth/update-profile", data); // ← CHANGED
       set({ authUser: res.data });
       toast.success("Profile updated successfully");
     } catch (error) {
@@ -99,6 +97,7 @@ export const useAuthStore = create((set, get) => ({
       set({ onlineUsers: userIds });
     });
   },
+  
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect();
   },
